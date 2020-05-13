@@ -1,0 +1,19 @@
+Connect-NsxServer -vCenterServer core-vcenter01.lab.enterpriseadmins.org
+
+$out = Invoke-NsxRestMethod -Method GET -Uri '/api/1.0/directory/listDomains'
+$out.DirectoryDomains.DirectoryDomain
+# note, in this example the domain ID = 2
+
+Invoke-NsxRestMethod -Method GET -Uri '/api/1.0/directory/listEventLogServersForDomain/2'
+
+$body = @"
+<EventlogServer>
+    <domainId>2</domainId>
+    <hostName>control-01.lab.enterpriseadmins.org</hostName>
+    <readerType>WMI</readerType>
+    <port>137</port>
+    <enabled>true</enabled>
+</EventlogServer>
+"@
+
+Invoke-NsxRestMethod -Method POST -Uri '/api/1.0/directory/updateEventLogServer' -body $body
